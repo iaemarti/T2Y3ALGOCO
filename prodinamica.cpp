@@ -121,11 +121,11 @@ int main(){
 				ans[i][j] = ans[i-1][j-1];
 			} else {
 				ans[i][j] = min({
-					// mantener C e insertar U
+					
 					ans[i][j-1] + costo_ins(strout[j-1]),
-					// borrar C e insertar CU
+					
 					costo_del(strin[i-1]) + ans[i-1][j],
-					// mantener C y sustituir U por A
+			
 					ans[i-1][j-1] + costo_sub(strin[i],strout[j])
 				});
 
