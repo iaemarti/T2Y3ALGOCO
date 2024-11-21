@@ -7,33 +7,6 @@ map< pair<char,char>, int> sub;
 map< char, int> del;
 map< pair<char,char>, int> trans;
 
-// generacios matrices de costo
-void datasets( string nombre, int n, int m ){
-	fstream arch;
-	arch.open(nombre, ios::out);
-
-	if(n==1){ n--; }
-	vector<vector<int>> matriz(n + 1, vector<int>(m + 1, -1));
-
-    for(int i=0; i<=n; i++){
-        for(int j=0; j<=m; j++){
-            int c;
-            if (i == j) { c = 0;
-            } else if (matriz[i][j] != -1) { c = matriz[i][j];
-            } else {
-                c = rand() % 10;
-                matriz[i][j] = c;
-                if (j <= n && i <= m) {
-                    matriz[j][i] = c;
-                }
-            }
-            arch << c << " ";
-        }
-        arch << "\n";
-    }
-    arch.close();
-}
-
 // funciones de costos
 int costo_ins(char b){
 	int costo;
@@ -58,6 +31,8 @@ int costo_trans(char a, char b){
 	costo = trans[{a,b}];
 	return costo;
 }
+
+
 
 // funcion de recursión
 int distancia(string input, string output, int i, int j){
@@ -84,57 +59,77 @@ int distancia(string input, string output, int i, int j){
 
 int main(){
 	string strin, strout;
-	cin >> strin >> strout;
+	getline(cin, strin);
+    if(strin.empty()) { strin = ""; }
 
-	int n = strin.length(), m = strout.length();
-	datasets( "cost_insert.txt", 1, m);
-	datasets( "cost_delete.txt", 1, n);
-	datasets( "cost_replace.txt", n, m);
-	datasets( "cost_transpose.txt", n, m);
+    getline(cin, strout);
+    if(strout.empty()) { strout = ""; }
 
+	string claves = "abcdefghijklmnopqrstuvwxyz";
 	//////// lecutra de archivos de costos
 	// archivo insertar
 	fstream file; int cos;
 	file.open("cost_insert.txt", ios::in);
-	for(int j=0; j<m; j++){
-		file >> cos;
-		ins[strout[j]] = cos;
+	for(int j=0; j<=26; j++){
+		file >> cos;// cout << cos << " ";
+		ins[claves[j]] = cos;
 	}
+	//cout << endl;
 	file.close();
 
 	// archivo sustituir
 	file.open("cost_replace.txt", ios::in);
-	for(int j=0; j<m; j++){
-		for(int i=0; i<n; i++){
-			file >> cos;
-			sub[{strin[i],strout[j]}] = cos;
+	for(int i=0; i<=26; i++){
+		for(int j=0; j<=26; j++){
+			file >> cos;// cout << cos << " ";
+			sub[{claves[i],claves[j]}] = cos;
 		}
+		//cout << endl;
 	}
 	file.close();
 
 	// archivo eliminar
 	file.open("cost_delete.txt", ios::in);
-	for(int i=0; i<n; i++){
-		file >> cos;
-		del[strin[i]] = cos;
+	for(int i=0; i<=26; i++){
+		file >> cos;// cout << cos << " ";
+		del[claves[i]] = cos;
 	}
+	//cout << endl;
 	file.close();
 
 	// archivo transponer
 	file.open("cost_transpose.txt", ios::in);
-	for(int j=0; j<m; j++){
-		for(int i=0; i<n; i++){
-			file >> cos;
-			trans[{strin[i],strout[j]}] = cos;
+	for(int i=0; i<=26; i++){
+		for(int j=0; j<=26; j++){
+			file >> cos;// cout << cos << " ";
+			trans[{claves[i],claves[j]}] = cos;
 		}
+		//cout << endl;
 	}
 	file.close();
 	//////// fin de la lecutra de archivos
 
+	/*
+	int total = 0;
+	for(int i=0;i<5;i++){
+		auto start = chrono::steady_clock::now();
+		// contadores en cero para recorrer strings en la función
+		int dm = distancia(strin, strout, 0, 0);
+		cout << "Distancia Mínima de Edición: " << dm << endl;
+		auto end = chrono::steady_clock::now();
+	    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	    total += duration;
+	    cout << "Tiempo de Ejecución:" << total/5 << endl;
+	}
+	*/
+	auto start = chrono::steady_clock::now();
 	// contadores en cero para recorrer strings en la función
-	int i = 0, j = 0;
-	int dm = distancia(strin, strout, i, j);
-	cout << "Distancia Mínimo de Edición: " << dm << endl;
+	int dm = distancia(strin, strout, 0, 0);
+	cout << "Distancia Mínima de Edición: " << dm << endl;
+	auto end = chrono::steady_clock::now();
+    	auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    
+   	cout << "Tiempo de Ejecución:" << duration << endl;
 
 	return 0;
 }
